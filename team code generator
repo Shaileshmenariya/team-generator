@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Team System</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f2f2f2;
+text-align:center;
+}
+
+.box{
+background:white;
+width:350px;
+margin:30px auto;
+padding:20px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+input{
+width:90%;
+padding:10px;
+margin:10px 0;
+}
+
+button{
+padding:10px 20px;
+background:#4CAF50;
+color:white;
+border:none;
+cursor:pointer;
+}
+
+table{
+width:90%;
+margin:auto;
+border-collapse:collapse;
+}
+
+th,td{
+padding:10px;
+border:1px solid #ddd;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>Add Team Member</h2>
+
+<input type="text" id="name" placeholder="Name">
+
+<input type="text" id="mobile" placeholder="Mobile">
+
+<input type="email" id="email" placeholder="Email">
+
+<br>
+
+<button onclick="addMember()">Generate Team Code</button>
+ 
+
+</div>
+
+<h2>Team Members</h2>
+
+<table>
+
+<tr>
+<th>Name</th>
+<th>Mobile</th>
+<th>Email</th>
+<th>Team Code</th>
+</tr>
+
+<tbody id="memberTable"></tbody>
+
+</table>
+
+
+<script>
+
+let members = JSON.parse(localStorage.getItem("teamMembers")) || [];
+
+function generateCode(){
+
+let chars="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+let code="TEAM";
+
+for(let i=0;i<5;i++){
+
+code+=chars.charAt(Math.floor(Math.random()*chars.length));
+
+}
+
+return code;
+
+}
+
+function addMember(){
+
+let name=document.getElementById("name").value;
+let mobile=document.getElementById("mobile").value;
+let email=document.getElementById("email").value;
+
+if(name=="" || mobile=="" || email==""){
+
+alert("Fill all details");
+
+return;
+
+}
+
+let code=generateCode();
+
+members.push({name:name,mobile:mobile,email:email,code:code});
+
+localStorage.setItem("teamMembers",JSON.stringify(members));
+
+displayMembers();
+
+}
+
+function displayMembers(){
+
+let table=document.getElementById("memberTable");
+
+table.innerHTML="";
+
+members.forEach(function(m){
+
+let row=`<tr>
+<td>${m.name}</td>
+<td>${m.mobile}</td>
+<td>${m.email}</td>
+<td>${m.code}</td>
+</tr>`;
+
+table.innerHTML+=row;
+
+});
+
+}
+
+displayMembers();
+
+function findMember(){
+
+let code=document.getElementById("searchCode").value;
+
+let member=members.find(m=>m.code===code);
+
+let result=document.getElementById("result");
+
+if(member){
+
+result.innerHTML="Name: "+member.name+" | Mobile: "+member.mobile;
+
+}else{
+
+result.innerHTML="Team Code Not Found";
+
+}
+
+}
+</script>
+<div class="box">
+
+<h2>Find Member by Team Code</h2>
+
+<input type="text" id="searchCode" placeholder="Enter Team Code">
+
+<button onclick="findMember()">Find</button>
+
+<h3 id="result"></h3>
+
+</div>
+</body>
+</html>
